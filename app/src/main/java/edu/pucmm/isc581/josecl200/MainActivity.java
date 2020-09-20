@@ -1,6 +1,7 @@
 package edu.pucmm.isc581.josecl200;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.text.TextUtils;
 import android.view.View;
@@ -21,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
     Button mandar, limpiar;
     CheckBox c,csharp,java,python,golang,fortran;
     RadioButton yesProg;
+    DatePicker fechaNacimiento;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
         golang = (CheckBox) findViewById(R.id.golangCheckBox);
         fortran = (CheckBox) findViewById(R.id.checkBox11);
         yesProg = (RadioButton) findViewById(R.id.siRadioButton);
+        fechaNacimiento = (DatePicker) findViewById(R.id.dateOfBirthDatePicker);
 
         List<String> genders = new ArrayList<String>();
         genders.add("--Seleccione su sexo--");
@@ -112,9 +115,33 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
 
-                if(!error)
-                    Toast.makeText(view.getContext(),"Todo bien en ese punto",Toast.LENGTH_LONG).show();
-                    //A la otra actividad
+                if(!error){
+                    String fecha = fechaNacimiento.getDayOfMonth()+"/"+(fechaNacimiento.getMonth()+1)+"/"+fechaNacimiento.getYear();
+                    Intent respuesta = new Intent(view.getContext(),AnswerActivity.class);
+                    String nameString = "Hola, soy "+nombre.getText().toString()+" "+apellido.getText().toString()+".";
+                    String sexAndBirthString = "Soy de sexo "+sexSpinner.getSelectedItem().toString().trim()+", y naci el "+fecha+".";
+                    String programmingString="No me gusta programar.";
+                    if(yesProg.isChecked()){
+                        programmingString="Me gusta programar. Mis lenguajes favoritos son: ";
+                        if(java.isChecked())
+                            programmingString+="Java, ";
+                        if(c.isChecked())
+                            programmingString+="C, ";
+                        if(python.isChecked())
+                            programmingString+="Python, ";
+                        if(csharp.isChecked())
+                            programmingString+="C#, ";
+                        if(golang.isChecked())
+                            programmingString+="Go, ";
+                        if(fortran.isChecked())
+                            programmingString+="Fortran";
+                        programmingString+=".";
+                    }
+                    respuesta.putExtra("nameString",nameString);
+                    respuesta.putExtra("sexAndBirthString",sexAndBirthString);
+                    respuesta.putExtra("programmingString",programmingString);
+                    startActivity(respuesta);
+                }
             }
         });
     }
