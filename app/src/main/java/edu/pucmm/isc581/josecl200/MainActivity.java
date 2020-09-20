@@ -1,8 +1,12 @@
 package edu.pucmm.isc581.josecl200;
 
+import android.content.DialogInterface;
+import android.graphics.Color;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 
@@ -16,6 +20,7 @@ public class MainActivity extends AppCompatActivity {
     RadioGroup programmer;
     Button mandar, limpiar;
     CheckBox c,csharp,java,python,golang,fortran;
+    RadioButton yesProg;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +39,8 @@ public class MainActivity extends AppCompatActivity {
         python = (CheckBox) findViewById(R.id.pythonCheckBox);
         golang = (CheckBox) findViewById(R.id.golangCheckBox);
         fortran = (CheckBox) findViewById(R.id.checkBox11);
+        yesProg = (RadioButton) findViewById(R.id.siRadioButton);
+
         List<String> genders = new ArrayList<String>();
         genders.add("--Seleccione su sexo--");
         genders.add("Masculino");
@@ -65,11 +72,51 @@ public class MainActivity extends AppCompatActivity {
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
                 if(radioGroup.getCheckedRadioButtonId()==R.id.noRadioButton)
                     disableEnableControls(false,findViewById(R.id.programmingLanguageLayout));
-                if(radioGroup.getCheckedRadioButtonId()==R.id.siRadioButton)
+                else if(radioGroup.getCheckedRadioButtonId()==R.id.siRadioButton)
                     disableEnableControls(true,findViewById(R.id.programmingLanguageLayout));
             }
         });
 
+        mandar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                boolean error=false;
+
+                if(TextUtils.isEmpty(nombre.getText().toString().trim())) {
+                    nombre.setError("Digite su nombre");
+                    error=true;
+                }
+
+                if(TextUtils.isEmpty(apellido.getText().toString().trim())) {
+                    apellido.setError("Digite su apellido");
+                    error=true;
+                }
+
+                if(sexSpinner.getSelectedItemId()==0){
+                    TextView errorText = (TextView)sexSpinner.getSelectedView();
+                    errorText.setError("");
+                    errorText.setTextColor(Color.RED);
+                    errorText.setText("Seleccione su genero");
+                    error=true;
+                }
+
+                if(yesProg.isChecked()){
+                    if(!c.isChecked() && !csharp.isChecked() && !java.isChecked() && !golang.isChecked() && !python.isChecked() && !fortran.isChecked()){
+                        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(view.getContext());
+                        alertDialogBuilder.setTitle("¿Seguro que le gusta programar?");
+                        alertDialogBuilder.setMessage("¿Y en qué programa, mi estimado?");
+                        alertDialogBuilder.setCancelable(true);
+                        AlertDialog alertDialog = alertDialogBuilder.create();
+                        alertDialog.show();
+                        error=true;
+                    }
+                }
+
+                if(!error)
+                    Toast.makeText(view.getContext(),"Todo bien en ese punto",Toast.LENGTH_LONG).show();
+                    //A la otra actividad
+            }
+        });
     }
 
     private void disableEnableControls(boolean enable, ViewGroup vg){
